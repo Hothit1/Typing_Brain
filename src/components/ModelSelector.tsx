@@ -10,7 +10,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelChange }) => {
   const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const model = event.target.value;
     setSelectedModel(model);
-    console.log('Model changed event:', event);
     console.log('New model selected:', model);
     onModelChange(model);
   };
@@ -29,6 +28,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({ onModelChange }) => {
         <option value="gpt-4o-mini">gpt-4o-mini</option>
         <option value="dalle-3">DALL-E 3</option>
         <option value="claude-3-sonnet">Claude 3.5 Sonnet</option>
+        <option value="llama-3.1-70b-versatile">Groq llama-3.1-70b-versatile</option>
       </select>
     </div>
   );

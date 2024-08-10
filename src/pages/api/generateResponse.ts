@@ -10,10 +10,16 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1',
+});
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('API route called');
   console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? 'Set' : 'Not set');
   console.log('ANTHROPIC_API_KEY:', process.env.ANTHROPIC_API_KEY ? 'Set' : 'Not set');
+  console.log('GROQ_API_KEY:', process.env.GROQ_API_KEY ? 'Set' : 'Not set');
   console.log('NODE_ENV:', process.env.NODE_ENV);
 
   try {
@@ -22,6 +28,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (!process.env.ANTHROPIC_API_KEY) {
       throw new Error('ANTHROPIC_API_KEY is not set in the environment variables');
+    }
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error('GROQ_API_KEY is not set in the environment variables');
     }
 
     if (req.method !== 'POST') {
@@ -68,6 +77,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })),
       });
       response = { response: completion.content[0].text };
+    } else if (model === 'llama-3.1-70b-versatile') {
+      console.log('Using Groq llama-3.1-70b-versatile');
+      const completion = await groq.chat.completions.create({
+        model: 'llama-3.1-70b-versatile',
+        messages: messages,
+      });
+      response = { response: completion.choices[0].message.content };
     } else {
       throw new Error('Invalid model selected');
     }
