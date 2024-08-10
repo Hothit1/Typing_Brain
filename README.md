@@ -2,6 +2,53 @@
 
 Typing Brain is an AI-powered chat interface that allows users to interact with various language models. This project is built using Next.js, TypeScript, and Tailwind CSS.
 
+## Project Structure
+
+```
+src
+├── app
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components
+│   ├── Layout
+│   │   ├── InfoPanel.tsx
+│   │   ├── MainChat.tsx
+│   │   └── Sidebar.tsx
+│   ├── ModelSelector.tsx
+│   └── UI
+│       ├── Button.tsx
+│       └── Input.tsx
+├── pages
+│   └── api
+│       └── generateResponse.ts
+└── utils
+    └── openai.ts
+```
+
+### Component Descriptions
+
+- `app/`: Contains the main application files for Next.js 13+ App Router.
+  - `layout.tsx`: Defines the main layout structure for the application.
+  - `page.tsx`: The main page component that renders the chat interface.
+
+- `components/`: Contains reusable React components.
+  - `Layout/`: Components for the main application layout.
+    - `InfoPanel.tsx`: Renders information about the selected AI model or chat session.
+    - `MainChat.tsx`: The core chat interface component, handling message display and input.
+    - `Sidebar.tsx`: Renders the sidebar with model selection and chat history.
+  - `ModelSelector.tsx`: Dropdown component for selecting different AI models.
+  - `UI/`: Basic UI components.
+    - `Button.tsx`: Reusable button component.
+    - `Input.tsx`: Reusable input component.
+
+- `pages/`: Contains API routes for Next.js.
+  - `api/generateResponse.ts`: Handles API requests to generate responses from AI models.
+
+- `utils/`: Utility functions and helpers.
+  - `openai.ts`: Contains utility functions for interacting with the OpenAI API.
+
 ## Project Roadmap and Checklist
 
 ### Project Setup
@@ -68,33 +115,10 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - Created reusable components for chat bubbles, model selectors, and agent cards
 - Using Tailwind CSS for consistent styling
 - State Management: To be implemented (consider using Redux or React Context)
-- API Integration: To be implemented
+- API Integration: Implemented for OpenAI and Anthropic models
 - Authentication: To be implemented
 - Responsive Design: Partially implemented, needs refinement
 - Local Storage: To be implemented
 - Markdown Support: To be implemented
 - Customization: To be implemented
 - Accessibility: To be implemented
-
-
- tree src
-src
-├── app
-│   ├── favicon.ico
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components
-│   ├── Layout
-│   │   ├── InfoPanel.tsx
-│   │   ├── MainChat.tsx
-│   │   └── Sidebar.tsx
-│   ├── ModelSelector.tsx
-│   └── UI
-│       ├── Button.tsx
-│       └── Input.tsx
-├── pages
-│   └── api
-│       └── generateResponse.ts
-└── utils
-    └── openai.ts

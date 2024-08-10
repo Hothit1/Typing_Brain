@@ -1,63 +1,74 @@
 import { useState } from 'react';
-import Button from '@/components/UI/Button';
-import Input from '@/components/UI/Input';
+import Button from '../UI/Button';
+import Input from '../UI/Input';
 
 interface Message {
   id: number;
   text: string;
   isUser: boolean;
-  role?: string; // Optional role property
-  content?: string; // Optional content property
+  role: 'user' | 'assistant';
+  content: string;
+  imageUrl?: string;
 }
 
-export default function MainChat() {
+interface MainChatProps {
+  model: string;
+}
+
+export default function MainChat({ model }: MainChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleSend = async () => {
     if (inputText.trim()) {
       const newMessage: Message = {
-        id: Date.now(), // Consider using a more unique ID generator
+        id: Date.now(),
         text: inputText,
         isUser: true,
-        role: 'user', // Add role property for the user message
-        content: inputText, // Set content for the user message
+        role: 'user',
+        content: inputText,
       };
-      setMessages((prevMessages) => [...prevMessages, newMessage]); // Update to include the new message
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
       setInputText('');
+      setError(null);
 
       try {
-        const messagesWithAssistant = [
-          ...messages.map(msg => ({
-            ...msg,
-            role: msg.isUser ? 'user' : 'assistant', // Ensure role is set for existing messages
-            content: msg.text || '', // Ensure content is set for existing messages, default to empty string if null
-          })),
-          newMessage, // Add the new user message directly
-        ];
-        
         const response = await fetch('/api/generateResponse', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ messages: messagesWithAssistant, model: 'gpt-4o-mini' }),
+          body: JSON.stringify({ 
+            messages: [...messages, newMessage].map(msg => ({
+              role: msg.role,
+              content: msg.content,
+            })),
+            model 
+          }),
         });
 
+        if (!response.ok) {
+          throw new Error('Failed to generate response');
+        }
+
         const data = await response.json();
-        const updatedMessages = [
-          ...messagesWithAssistant,
-          { 
-            id: Date.now() + 1, 
-            role: 'assistant', 
-            content: data.response || '', // Ensure content is set from response, default to empty string if null
-            text: data.response || '', // Set text to the response as well, default to empty string if null
-            isUser: false 
-          } as Message, // Cast to Message type
-        ];
-        setMessages(updatedMessages);
-      } catch (error) {
+        let assistantMessage: Message = { 
+          id: Date.now() + 1, 
+          role: 'assistant', 
+          content: data.response,
+          text: data.response,
+          isUser: false 
+        };
+
+        if (model === 'dalle-3' && data.imageUrl) {
+          assistantMessage.imageUrl = data.imageUrl;
+        }
+
+        setMessages(prevMessages => [...prevMessages, assistantMessage]);
+      } catch (error: any) {
         console.error('Error generating response:', error);
+        setError(error.message);
       }
     }
   };
@@ -66,19 +77,20 @@ export default function MainChat() {
     <div className="flex-1 flex flex-col">
       <div className="flex-1 p-4 overflow-y-auto">
         {messages.map((message) => (
-          <div
-            key={message.id} // Ensure this is unique
-            className={`mb-4 ${message.isUser ? 'text-right' : 'text-left'}`}
-          >
-            <span
-              className={`inline-block p-2 rounded-lg ${
-                message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'
-              }`}
-            >
+          <div key={message.id} className={`mb-4 ${message.isUser ? 'text-right' : 'text-left'}`}>
+            <span className={`inline-block p-2 rounded-lg ${message.isUser ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
               {message.text}
             </span>
+            {message.imageUrl && (
+              <img src={message.imageUrl} alt="Generated image" className="mt-2 max-w-full h-auto" />
+            )}
           </div>
         ))}
+        {error && (
+          <div className="mb-4 text-red-500">
+            Error: {error}
+          </div>
+        )}
       </div>
       <div className="p-4 border-t flex">
         <Input
