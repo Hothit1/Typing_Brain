@@ -9,7 +9,16 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - [x] Set up GitHub repository
 - [x] Configure src/ directory and App Router
 - [x] Set up import alias (@/*)
+- [x] Create initial README.md with project roadmap
 - [ ] Create initial project structure (components, utils, etc.)
+
+### GitHub Management
+- [x] Make initial commit and push to GitHub
+- [x] Create and push README.md
+- [ ] Create feature branches for each major component
+- [ ] Make regular commits with clear messages
+- [ ] Create pull requests for completed features
+- [ ] Merge completed features into main branch
 
 ### Day 1: Core Setup and Chat Interface
 
@@ -44,11 +53,6 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - [ ] Ensure layout works on desktop and mobile
 - [ ] Add final styling touches and icons
 
-#### GitHub Management
-- [ ] Create feature branches for each major component
-- [ ] Make regular commits with clear messages
-- [ ] Create pull requests for completed features
-- [ ] Merge completed features into main branch
 
 ### Additional Tasks (if time allows)
 - [ ] Implement dark mode toggle
