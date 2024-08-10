@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Typing Brain
 
-## Getting Started
+Typing Brain is an AI-powered chat interface that allows users to interact with various language models. This project is built using Next.js, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## Project Roadmap and Checklist
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Project Setup
+- [x] Initialize Next.js project with TypeScript and Tailwind CSS
+- [x] Set up GitHub repository
+- [x] Configure src/ directory and App Router
+- [x] Set up import alias (@/*)
+- [ ] Create initial project structure (components, utils, etc.)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Day 1: Core Setup and Chat Interface
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Basic Layout (2 hours)
+- [ ] Implement simplified three-column layout
+- [ ] Create placeholder components for each section
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+#### Chat Interface (4 hours)
+- [ ] Develop main chat component with message display
+- [ ] Implement message input functionality
+- [ ] Add basic styling with Tailwind CSS
 
-## Learn More
+#### AI Model Integration (3 hours)
+- [ ] Set up API route to handle requests to OpenAI
+- [ ] Implement basic error handling
 
-To learn more about Next.js, take a look at the following resources:
+#### Model Selection (2 hours)
+- [ ] Create dropdown for model selection
+- [ ] Implement logic to switch between models
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Day 2: Essential Features and Polish
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+#### Chat History (3 hours)
+- [ ] Implement basic local storage for chat history
+- [ ] Create functionality to switch between chats
 
-## Deploy on Vercel
+#### API Key Management (3 hours)
+- [ ] Create form for users to input their API key
+- [ ] Store API key securely (consider using encryption)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### Responsive Design and Polish (2 hours)
+- [ ] Ensure layout works on desktop and mobile
+- [ ] Add final styling touches and icons
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+#### GitHub Management
+- [ ] Create feature branches for each major component
+- [ ] Make regular commits with clear messages
+- [ ] Create pull requests for completed features
+- [ ] Merge completed features into main branch
+
+### Additional Tasks (if time allows)
+- [ ] Implement dark mode toggle
+- [ ] Add basic error handling for API failures
+- [ ] Create a simple landing page explaining the app
+
+### Final Steps
+- [ ] Review and test all features
+- [ ] Update README.md with project description and setup instructions
+- [ ] Final commit and push to GitHub
