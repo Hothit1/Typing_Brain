@@ -16,9 +16,9 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - [x] Make initial commit and push to GitHub
 - [x] Create and push README.md
 - [x] Create feature branches for each major component
-- [ ] Make regular commits with clear messages
-- [ ] Create pull requests for completed features
-- [ ] Merge completed features into main branch
+- [x] Make regular commits with clear messages
+- [x] Create pull requests for completed features
+- [x] Merge completed features into main branch
 
 ### Day 1: Core Setup and Chat Interface
 #### Basic Layout (2 hours)
@@ -31,12 +31,12 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - [x] Add basic styling with Tailwind CSS
 
 #### AI Model Integration (3 hours)
-- [ ] Set up API route to handle requests to OpenAI
-- [ ] Implement basic error handling
+- [x] Set up API route to handle requests to OpenAI
+- [x] Implement basic error handling
 
 #### Model Selection (2 hours)
-- [ ] Create dropdown for model selection
-- [ ] Implement logic to switch between models
+- [x] Create dropdown for model selection
+- [x] Implement logic to switch between models
 
 ### Day 2: Essential Features and Polish
 #### Chat History (3 hours)
@@ -75,3 +75,26 @@ Typing Brain is an AI-powered chat interface that allows users to interact with 
 - Markdown Support: To be implemented
 - Customization: To be implemented
 - Accessibility: To be implemented
+
+
+ tree src
+src
+├── app
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components
+│   ├── Layout
+│   │   ├── InfoPanel.tsx
+│   │   ├── MainChat.tsx
+│   │   └── Sidebar.tsx
+│   ├── ModelSelector.tsx
+│   └── UI
+│       ├── Button.tsx
+│       └── Input.tsx
+├── pages
+│   └── api
+│       └── generateResponse.ts
+└── utils
+    └── openai.ts
