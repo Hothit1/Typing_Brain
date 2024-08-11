@@ -10,12 +10,17 @@ interface ChatTitle {
 }
 
 export default function Home() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [model, setModel] = useState('gpt-4o-mini');
   const [addon, setAddon] = useState('');
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [currentGPT, setCurrentGPT] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [chatTitles, setChatTitles] = useState<ChatTitle>({});
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
 
   useEffect(() => {
     // Load chat titles from localStorage on initial render
@@ -76,21 +81,23 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className={`flex flex-col h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
       <TopBar onModelChange={handleModelChange} onAddonChange={handleAddonChange} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar 
-          onChatSelect={handleChatSelect} 
+        <Sidebar
+          onChatSelect={handleChatSelect}
           onNewChat={handleNewChat}
           onGPTSelect={handleGPTSelect}
           onChatUpdate={handleChatUpdate}
           isOpen={isSidebarOpen}
           onToggle={toggleSidebar}
+          isDarkMode={isDarkMode}
+          toggleDarkMode={toggleDarkMode}
         />
-        <MainChat 
-          model={model} 
-          addon={addon} 
-          chatId={currentChatId} 
+        <MainChat
+          model={model}
+          addon={addon}
+          chatId={currentChatId}
           onChatUpdate={handleChatUpdate}
           currentGPT={currentGPT}
           chatTitle={currentChatId ? chatTitles[currentChatId] : null}

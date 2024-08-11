@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-interface InputProps {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   placeholder?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -8,16 +8,22 @@ interface InputProps {
   disabled?: boolean;
 }
 
-export default function Input({ placeholder, value, onChange, onKeyPress, disabled }: InputProps) {
-  return (
-    <input
-      type="text"
-      className="border rounded px-3 py-2 w-full"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      onKeyPress={onKeyPress}
-      disabled={disabled}
-    />
-  );
-}
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ placeholder, value, onChange, onKeyPress, disabled, ...rest }, ref) => {
+    return (
+      <input
+        type="text"
+        className="border rounded px-3 py-2 w-full"
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        onKeyPress={onKeyPress}
+        disabled={disabled}
+        ref={ref}
+        {...rest}
+      />
+    );
+  }
+);
+
+export default Input;

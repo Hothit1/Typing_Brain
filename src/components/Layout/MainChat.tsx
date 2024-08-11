@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, KeyboardEvent } from 'react';
+import React, { useState, useEffect, useRef, useCallback, KeyboardEvent } from 'react';
 import Button from '../UI/Button';
 import Input from '../UI/Input';
 
@@ -26,6 +26,13 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [titleGenerated, setTitleGenerated] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [chatId, messages.length]);
 
   useEffect(() => {
     if (chatId) {
@@ -156,6 +163,9 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
         setError(error.message);
       } finally {
         setIsLoading(false);
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       }
     }
   };
@@ -195,6 +205,7 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
       </div>
       <div className="p-4 border-t flex">
         <Input
+          ref={inputRef}
           placeholder="Type a message..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}

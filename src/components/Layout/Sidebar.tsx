@@ -11,6 +11,8 @@ interface SidebarProps {
   onChatUpdate: (chatId: string, title: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
 }
 
 interface ChatHistory {
@@ -24,7 +26,7 @@ interface GPT {
   systemMessage: string;
 }
 
-export default function Sidebar({ onChatSelect, onNewChat, onGPTSelect, onChatUpdate, isOpen, onToggle }: SidebarProps) {
+export default function Sidebar({ onChatSelect, onNewChat, onGPTSelect, onChatUpdate, isOpen, onToggle, isDarkMode, toggleDarkMode }: SidebarProps) {
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [gpts, setGPTs] = useState<GPT[]>([]);
   const [isCreateGPTModalOpen, setIsCreateGPTModalOpen] = useState(false);
@@ -86,12 +88,20 @@ export default function Sidebar({ onChatSelect, onNewChat, onGPTSelect, onChatUp
     <div className={`bg-white border-r h-full flex flex-col transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
       <div className="flex justify-between items-center p-4">
         <h2 className={`text-xl font-bold ${isOpen ? '' : 'hidden'}`}>Typing Brain</h2>
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-full hover:bg-gray-200"
-        >
-          {isOpen ? '◀' : '▶'}
-        </button>
+        <div className="flex items-center">
+          <button
+            onClick={toggleDarkMode}
+            className={`p-2 rounded-full hover:bg-gray-200 ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-200 text-gray-800'}`}
+          >
+            {isDarkMode ? '🌙' : '☀️'}
+          </button>
+          <button
+            onClick={onToggle}
+            className="p-2 rounded-full hover:bg-gray-200 ml-2"
+          >
+            {isOpen ? '◀' : '▶'}
+          </button>
+        </div>
       </div>
       {isOpen && (
         <>
