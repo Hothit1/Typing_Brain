@@ -120,6 +120,18 @@ src
 - [x] Update README.md with project description and setup instructions
 - [ ] Final commit and push to GitHub
 
+Improment idea: 
+
+- Make chat interface look more like claude.
+- add google ai
+- add duckduckgo search 
+- add markdown to display code.
+- add tts addon
+- add vision addon
+- add attach file like srt, pdf to handle 
+- add wishper
+- add artifacts like claude
+
 ## Interface Ideas
 
 - Frontend Framework: Using Next.js
