@@ -13,16 +13,21 @@ src
 │   └── page.tsx
 ├── components
 │   ├── Layout
-│   │   ├── InfoPanel.tsx
 │   │   ├── MainChat.tsx
-│   │   └── Sidebar.tsx
+│   │   ├── Sidebar.tsx
+│   │   └── TopBar.tsx
+│   ├── ChatHistoryItem.tsx
+│   ├── CreateGPTModal.tsx
+│   ├── EditGPTModal.tsx
+│   ├── GPTItem.tsx
 │   ├── ModelSelector.tsx
 │   └── UI
 │       ├── Button.tsx
 │       └── Input.tsx
 ├── pages
 │   └── api
-│       └── generateResponse.ts
+│       ├── generateResponse.ts
+│       └── generateTitle.ts
 └── utils
     └── openai.ts
 ```
@@ -35,9 +40,13 @@ src
 
 - `components/`: Contains reusable React components.
   - `Layout/`: Components for the main application layout.
-    - `InfoPanel.tsx`: Renders information about the selected AI model or chat session.
     - `MainChat.tsx`: The core chat interface component, handling message display and input.
-    - `Sidebar.tsx`: Renders the sidebar with model selection and chat history.
+    - `Sidebar.tsx`: Renders the sidebar with model selection, GPTs, and chat history.
+    - `TopBar.tsx`: Contains model selection and addon options.
+  - `ChatHistoryItem.tsx`: Represents a single chat history item.
+  - `CreateGPTModal.tsx`: Modal for creating new GPTs.
+  - `EditGPTModal.tsx`: Modal for editing existing GPTs.
+  - `GPTItem.tsx`: Represents a single GPT item in the sidebar.
   - `ModelSelector.tsx`: Dropdown component for selecting different AI models.
   - `UI/`: Basic UI components.
     - `Button.tsx`: Reusable button component.
@@ -45,6 +54,7 @@ src
 
 - `pages/`: Contains API routes for Next.js.
   - `api/generateResponse.ts`: Handles API requests to generate responses from AI models.
+  - `api/generateTitle.ts`: Generates titles for chat sessions.
 
 - `utils/`: Utility functions and helpers.
   - `openai.ts`: Contains utility functions for interacting with the OpenAI API.
@@ -87,38 +97,37 @@ src
 
 ### Day 2: Essential Features and Polish
 #### Chat History (3 hours)
-- [ ] Implement basic local storage for chat history
-- [ ] Create functionality to switch between chats
+- [x] Implement basic local storage for chat history
+- [x] Create functionality to switch between chats
 
-#### API Key Management (3 hours)
-- [ ] Create form for users to input their API key
-- [ ] Store API key securely (consider using encryption)
+#### GPT Management
+- [x] Implement creation of custom GPTs
+- [x] Add functionality to edit and delete GPTs
+- [x] Store GPTs in local storage
 
 #### Responsive Design and Polish (2 hours)
-- [ ] Ensure layout works on desktop and mobile
-- [ ] Add final styling touches and icons
+- [x] Ensure layout works on desktop and mobile
+- [x] Add final styling touches and icons
 
-### Additional Tasks (if time allows)
-- [ ] Implement dark mode toggle
-- [ ] Add basic error handling for API failures
-- [ ] Create a simple landing page explaining the app
+### Additional Implemented Features
+- [x] Implement collapsible sidebar
+- [x] Add DALL-E image generation support
+- [x] Implement auto-save and auto-title generation for chats
+- [x] Add support for multiple AI models (OpenAI, Anthropic, Groq)
 
 ### Final Steps
-- [ ] Review and test all features
-- [ ] Update README.md with project description and setup instructions
+- [x] Review and test all features
+- [x] Update README.md with project description and setup instructions
 - [ ] Final commit and push to GitHub
 
 ## Interface Ideas
 
 - Frontend Framework: Using Next.js
-- Implemented a flexible grid system for the three-column layout
-- Created reusable components for chat bubbles, model selectors, and agent cards
+- Implemented a flexible layout with collapsible sidebar
+- Created reusable components for chat bubbles, model selectors, and GPT items
 - Using Tailwind CSS for consistent styling
-- State Management: To be implemented (consider using Redux or React Context)
-- API Integration: Implemented for OpenAI and Anthropic models
-- Authentication: To be implemented
-- Responsive Design: Partially implemented, needs refinement
-- Local Storage: To be implemented
-- Markdown Support: To be implemented
-- Customization: To be implemented
-- Accessibility: To be implemented
+- State Management: Implemented using React hooks and context
+- API Integration: Implemented for OpenAI, Anthropic, and Groq models
+- Local Storage: Implemented for chat history and GPTs
+- Responsive Design: Implemented, works on desktop and mobile
+- Customization: Implemented custom GPTs with editable system messages

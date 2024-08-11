@@ -38,23 +38,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
 
-    const { messages, model } = req.body;
-    console.log('Received request:', { model, messageCount: messages.length });
+    const { messages, model, addon } = req.body;
+    console.log('Received request:', { model, addon, messageCount: messages.length });
 
     if (!messages || !model) {
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
     let response;
-    if (model === 'gpt-4o-mini') {
-      console.log('Using gpt-4o-mini model');
-      const completion = await openai.chat.completions.create({
-        model: 'gpt-4',  // Note: Replace 'gpt-4' with 'gpt-4o-mini' when it becomes available
-        messages: messages,
-      });
-      response = { response: completion.choices[0].message.content };
-    } else if (model === 'dalle-3') {
-      console.log('Using DALL-E 3 model');
+    if (addon === 'dalle') {
+      console.log('Using DALL-E 3 addon');
       const imagePrompt = messages[messages.length - 1].content;
       const image = await openai.images.generate({
         model: "dall-e-3",
@@ -66,6 +59,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         response: "Image generated successfully.", 
         imageUrl: image.data[0].url 
       };
+    } else if (model === 'gpt-4o-mini') {
+      console.log('Using gpt-4o-mini model');
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4',  // Note: Replace 'gpt-4' with 'gpt-4o-mini' when it becomes available
+        messages: messages,
+      });
+      response = { response: completion.choices[0].message.content };
     } else if (model === 'claude-3-sonnet') {
       console.log('Using Claude 3.5 Sonnet model');
       const completion = await anthropic.messages.create({
@@ -85,7 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
       response = { response: completion.choices[0].message.content };
     } else {
-      throw new Error('Invalid model selected');
+      throw new Error('Invalid model or addon selected');
     }
 
     console.log('Response generated successfully');
