@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import path from 'path';
+import fs from 'fs';
+import { Readable } from 'stream';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -58,6 +61,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       response = { 
         response: "Image generated successfully.", 
         imageUrl: image.data[0].url 
+      };
+    } else if (addon === 'tts') {
+      console.log('Using TTS addon');
+      const inputText = messages[messages.length - 1].content;
+      console.log('Input text for TTS:', inputText);
+
+      // Get the absolute path to the public folder
+      const publicDir = path.join(process.cwd(), 'public');
+      const speechFile = path.join(publicDir, 'speech.mp3');
+
+      const mp3 = await openai.audio.speech.create({
+        model: "tts-1",
+        voice: "alloy",
+        input: inputText,
+      });
+
+      console.log("TTS API Response:", mp3);
+
+      // Check if the response body is a ReadableStream
+      if (mp3.body instanceof Readable) {
+        const chunks = [];
+        for await (const chunk of mp3.body) {
+          chunks.push(chunk);
+        }
+        fs.writeFileSync(speechFile, Buffer.concat(chunks));
+      } else {
+        console.log("Unexpected response format:", typeof mp3.body, mp3.body);
+        throw new Error('Unexpected response format from TTS API');
+      }
+
+      response = {
+        response: "Text-to-speech audio generated successfully.",
+        audioUrl: `/speech.mp3`,
       };
     } else if (model === 'gpt-4o-mini') {
       console.log('Using gpt-4o-mini model');

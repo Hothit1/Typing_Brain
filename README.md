@@ -152,8 +152,7 @@ Push to main branch:
 
 
 This command stages all the changes in your working directory, including new files, modified files, and deleted files. The . (dot) is a shorthand for the current directory. You can also selectively stage specific files by replacing . with the file path(s) (e.g., git add README.md).
-
+git checkout main 
 git status (optional, check status) 
 git commit -m "content"
-git checkout main 
 git push origin main

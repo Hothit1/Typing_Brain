@@ -8,12 +8,21 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      onFileSelect(file);
+        const formData = new FormData();
+        formData.append('audio', file);
+
+        const response = await fetch('/api/speechToText', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const data = await response.json();
+        console.log('Transcription:', data.text);
     }
-  };
+};
 
   return (
     <div>
