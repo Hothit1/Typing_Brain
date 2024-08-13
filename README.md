@@ -132,6 +132,8 @@ Improment idea:
 - add wishper
 - add artifacts like claude
 
+- Deploy to vercel and my webpage.
+
 ## Interface Ideas
 
 - Frontend Framework: Using Next.js
@@ -147,9 +149,11 @@ Improment idea:
 
 Push to main branch:
 
-git add .This command stages all the changes in your working directory, including new files, modified files, and deleted files. The . (dot) is a shorthand for the current directory. You can also selectively stage specific files by replacing . with the file path(s) (e.g., git add README.md).
+
+
+This command stages all the changes in your working directory, including new files, modified files, and deleted files. The . (dot) is a shorthand for the current directory. You can also selectively stage specific files by replacing . with the file path(s) (e.g., git add README.md).
 
 git status (optional, check status) 
 git commit -m "content"
- git checkout main 
-    git push origin main
+git checkout main 
+git push origin main

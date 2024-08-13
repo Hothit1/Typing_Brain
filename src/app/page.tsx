@@ -52,12 +52,29 @@ export default function Home() {
     const newChatId = Date.now().toString();
     setCurrentChatId(newChatId);
     setCurrentGPT(gptId || null);
+    
+    let initialMessages = [];
+    if (gptId) {
+      const gpts = JSON.parse(localStorage.getItem('gpts') || '[]');
+      const selectedGPT = gpts.find((gpt: any) => gpt.id === gptId);
+      if (selectedGPT) {
+        initialMessages = [{
+          id: Date.now(),
+          role: 'system',
+          content: selectedGPT.systemMessage
+        }];
+      }
+    }
+    
     setChatTitles(prev => ({ ...prev, [newChatId]: 'New Chat' }));
     
     // Update localStorage
     const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
     const updatedHistory = [{ id: newChatId, title: 'New Chat' }, ...chatHistory];
     localStorage.setItem('chatHistory', JSON.stringify(updatedHistory));
+    
+    // Save initial messages for the new chat
+    localStorage.setItem(`chat_${newChatId}`, JSON.stringify(initialMessages));
   };
 
   const handleGPTSelect = (gptId: string) => {

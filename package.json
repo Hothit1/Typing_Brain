@@ -9,12 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.3.2",
+    "@ai-sdk/openai": "*",
     "@anthropic-ai/sdk": "^0.18.0",
     "next": "14.2.5",
     "openai": "^4.55.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "lucide-react": "^0.344.0"
   },
   "devDependencies": {
     "@types/node": "^20",
