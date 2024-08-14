@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from '@ai-sdk/openai';
+import fs from 'fs';
 
 const openai = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY });
 
@@ -8,11 +9,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { audio } = req.body; // Expect an audio file (base64 encoded or URL)
 
+      // Ensure audio is provided
+      if (!audio) {
+        return res.status(400).json({ error: 'Audio file is required' });
+      }
+
+      // If audio is a file path, create a readable stream
+      const audioStream = fs.createReadStream(audio); // Adjust this if audio is base64 or URL
+
       // Transcribe the audio with Whisper
-      const response = await openai.audio.transcribe(audio, {
+      const response = await openai.transcriptions.create({
         model: 'whisper-1', // Choose a Whisper model (check OpenAI docs for options)
+        file: audioStream, // Pass the readable stream
         language: 'en',  // Set the language for transcription (optional)
-        // Other parameters like temperature, etc. can be set here
       });
 
       // Respond with the transcription
