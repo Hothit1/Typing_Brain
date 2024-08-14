@@ -13,9 +13,9 @@ export default function TopBar({ onModelChange, onAddonChange, model, addon }: T
     <div className="flex justify-between items-center p-4 border-b">
       <ModelAddonSelector 
         model={model}
-        addon={addon}
+        addon={addon} // Keep the addon state here
         onModelChange={onModelChange}
-        onAddonChange={onAddonChange}
+        onAddonChange={onAddonChange} // This will update the addon in MainChat
       />
     </div>
   );

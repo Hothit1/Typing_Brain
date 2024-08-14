@@ -31,7 +31,7 @@ const ModelAddonSelector: React.FC<ModelAddonSelectorProps> = ({ model, addon, o
         >
           <option value="">Select Addon</option>
           <option value="dalle">DALL-E</option>
-          <option value="tts">Text-to-Speech</option> {/* Add TTS option here */}
+          <option value="tts">Text-to-Speech</option>
         </select>
         <Plus className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
       </div>

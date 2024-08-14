@@ -11,16 +11,21 @@
   "dependencies": {
     "@ai-sdk/openai": "*",
     "@anthropic-ai/sdk": "^0.18.0",
+    "@types/formidable": "^3.4.5",
+    "formidable": "^3.5.1",
+    "lucide-react": "^0.344.0",
     "next": "14.2.5",
     "openai": "^4.55.4",
     "react": "^18",
     "react-dom": "^18",
-    "lucide-react": "^0.344.0"
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
     "postcss": "^8",

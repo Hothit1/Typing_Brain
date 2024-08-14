@@ -11,7 +11,7 @@ interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   imageUrl?: string;
-  audioUrl?: string; // Added audioUrl property
+  audioUrl?: string;
 }
 
 interface MainChatProps {
@@ -29,7 +29,7 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAiTyping, setIsAiTyping] = useState(false);
-  const [titleGenerated, setTitleGenerated] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -46,7 +46,6 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
       } else {
         setMessages([]);
       }
-      setTitleGenerated(false);
     }
   }, [chatId]);
 
@@ -69,84 +68,79 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
   }, [currentGPT, chatId, messages.length]);
 
   const handleSend = async () => {
-    if (inputText.trim() && !isLoading && chatId) {
-        setIsLoading(true);
-        setIsAiTyping(true);
-        const newMessage: Message = {
-            id: Date.now(),
-            text: inputText,
-            isUser: true,
-            role: 'user',
-            content: inputText,
-        };
-        const updatedMessages = [...messages, newMessage];
-        setMessages(updatedMessages);
-        setInputText('');
-        setError(null);
-
-        console.log("Sending message:", newMessage);
-        console.log("Current model:", model);
-        console.log("Current addon:", addon);
-
-        localStorage.setItem(`chat_${chatId}`, JSON.stringify(updatedMessages));
-
-        try {
-            const response = await fetch('/api/generateResponse', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    messages: updatedMessages.map(msg => ({
-                        role: msg.role,
-                        content: msg.content,
-                    })),
-                    model,
-                    addon,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to generate response: ${response.status} ${response.statusText}`);
-            }
-
-            const data = await response.json();
-            console.log("API Response:", data);
-
-            let assistantMessage: Message = {
-              id: Date.now() + 1,
-              role: 'assistant',
-              content: data.response,
-              text: data.response,
-              isUser: false,
-            };
-          
-            if (addon === 'dalle' && data.imageUrl) {
-              console.log("DALL-E image URL received:", data.imageUrl);
-              assistantMessage.imageUrl = data.imageUrl;
-            } else if (addon === 'tts' && data.audioUrl) {
-              console.log("TTS audio URL received:", data.audioUrl);
-              assistantMessage.audioUrl = data.audioUrl; // Store audio URL in audioUrl property
-            }
-          
-
-            console.log("Assistant message:", assistantMessage);
-
-            const finalMessages = [...updatedMessages, assistantMessage];
-            setMessages(finalMessages);
-            localStorage.setItem(`chat_${chatId}`, JSON.stringify(finalMessages));
-
-            console.log("Updated messages:", finalMessages);
-        } catch (error: any) {
-            console.error('Error generating response:', error);
-            setError(error.message);
-        } finally {
-            setIsLoading(false);
-            setIsAiTyping(false);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
+    if ((inputText.trim() || selectedImage) && !isLoading && chatId) {
+      setIsLoading(true);
+      setIsAiTyping(true);
+      const newMessage: Message = {
+        id: Date.now(),
+        text: inputText,
+        isUser: true,
+        role: 'user',
+        content: inputText,
+      };
+      const updatedMessages = [...messages, newMessage];
+      setMessages(updatedMessages);
+      setInputText('');
+      setError(null);
+  
+      localStorage.setItem(`chat_${chatId}`, JSON.stringify(updatedMessages));
+  
+      try {
+        const formData = new FormData();
+        formData.append('data', JSON.stringify({
+          messages: updatedMessages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+          model,
+          addon, // Use the addon prop directly
+        }));
+        if (selectedImage) {
+          formData.append('image', selectedImage);
         }
+  
+        const response = await fetch('/api/generateResponse', {
+          method: 'POST',
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Failed to generate response: ${response.status} ${response.statusText}`);
+        }
+  
+        const data = await response.json();
+  
+        let assistantMessage: Message = {
+          id: Date.now() + 1,
+          role: 'assistant',
+          content: data.response,
+          text: data.response,
+          isUser: false,
+        };
+  
+        if (data.imageUrl) {
+          assistantMessage.imageUrl = data.imageUrl;
+        }
+        if (data.audioUrl) {
+          assistantMessage.audioUrl = data.audioUrl;
+        }
+  
+        const finalMessages = [...updatedMessages, assistantMessage];
+        setMessages(finalMessages);
+        localStorage.setItem(`chat_${chatId}`, JSON.stringify(finalMessages));
+  
+        // Clear the selected image after sending
+        setSelectedImage(null);
+      } catch (error: any) {
+        console.error('Error generating response:', error);
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+        setIsAiTyping(false);
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }
     }
   };
 
@@ -158,35 +152,39 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
   };
 
   const handleFileSelect = (file: File) => {
-    console.log('Selected file:', file);
+    setSelectedImage(file);
   };
 
   return (
     <div className="flex-1 flex flex-col">
-        {chatTitle && <h2 className="text-xl font-bold p-4">{chatTitle}</h2>}
-        <div className="flex-1 overflow-y-auto">
-            <ChatInterface messages={messages} isAiTyping={isAiTyping} />
+      {chatTitle && <h2 className="text-xl font-bold p-4">{chatTitle}</h2>}
+      <div className="flex-1 overflow-y-auto">
+        <ChatInterface messages={messages} isAiTyping={isAiTyping} />
+      </div>
+      {error && (
+        <div className="p-4 text-red-500">
+          Error: {error}
         </div>
-        {error && (
-            <div className="p-4 text-red-500">
-                Error: {error}
-            </div>
+      )}
+      <div className="p-4 border-t flex items-center">
+        <FileUpload onFileSelect={handleFileSelect} />
+        {selectedImage && (
+          <div className="mr-2 text-sm text-gray-500">
+            Image selected: {selectedImage.name}
+          </div>
         )}
-        <div className="p-4 border-t flex items-center">
-            <FileUpload onFileSelect={handleFileSelect} />
-            <Input
-                ref={inputRef}
-                placeholder="Type a message..."
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={isLoading || !chatId}
-            />
-            <Button onClick={handleSend} disabled={isLoading || !chatId}>
-                {isLoading ? 'Sending...' : 'Send'}
-            </Button>
-        </div>
-        
+        <Input
+          ref={inputRef}
+          placeholder="Type a message..."
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          onKeyPress={handleKeyPress}
+          disabled={isLoading || !chatId}
+        />
+        <Button onClick={handleSend} disabled={isLoading || !chatId}>
+          {isLoading ? 'Sending...' : 'Send'}
+        </Button>
+      </div>
     </div>
   );
 }

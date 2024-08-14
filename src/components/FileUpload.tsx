@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Paperclip } from 'lucide-react';
+import { Image } from 'lucide-react';
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -8,21 +8,12 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-        const formData = new FormData();
-        formData.append('audio', file);
-
-        const response = await fetch('/api/speechToText', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const data = await response.json();
-        console.log('Transcription:', data.text);
+      onFileSelect(file);
     }
-};
+  };
 
   return (
     <div>
@@ -30,12 +21,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         onClick={() => fileInputRef.current?.click()}
         className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
       >
-        <Paperclip size={20} />
+        <Image size={20} />
       </button>
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileSelect}
+        accept="image/*"
         className="hidden"
       />
     </div>

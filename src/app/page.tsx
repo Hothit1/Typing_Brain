@@ -33,6 +33,9 @@ export default function Home() {
       });
       setChatTitles(titles);
     }
+
+    // Automatically create a new chat on initial load
+    handleNewChat();
   }, []);
 
   const handleModelChange = (selectedModel: string) => {
