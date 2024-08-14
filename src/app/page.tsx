@@ -9,6 +9,12 @@ interface ChatTitle {
   [key: string]: string;
 }
 
+interface Message {
+  id: number;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [model, setModel] = useState('gpt-4o-mini');
@@ -56,7 +62,7 @@ export default function Home() {
     setCurrentChatId(newChatId);
     setCurrentGPT(gptId || null);
     
-    let initialMessages = [];
+    let initialMessages: Message[] = []; // Explicitly define the type
     if (gptId) {
       const gpts = JSON.parse(localStorage.getItem('gpts') || '[]');
       const selectedGPT = gpts.find((gpt: any) => gpt.id === gptId);
