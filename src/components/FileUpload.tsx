@@ -20,6 +20,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
       <button
         onClick={() => fileInputRef.current?.click()}
         className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+        aria-label="Upload Image" // Add aria-label for accessibility
       >
         <Image size={20} />
       </button>

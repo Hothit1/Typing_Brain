@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Download, Image as ImageIcon, Copy, Check, Code, Eye } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import Image from 'next/image'; // Import Image from next/image
 
 interface Message {
   id: number;
@@ -18,8 +19,8 @@ interface ChatInterfaceProps {
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) => {
-  const [copiedStates, setCopiedStates] = useState<{[key: string]: boolean}>({});
-  const [previewStates, setPreviewStates] = useState<{[key: string]: boolean}>({});
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
+  const [previewStates, setPreviewStates] = useState<{ [key: string]: boolean }>({});
 
   const handleDownload = (url: string, type: 'image' | 'audio') => {
     const link = document.createElement('a');
@@ -135,9 +136,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) =
             {renderContent(message.content, message.id)}
             {message.imageUrl && message.role === 'assistant' && (
               <div className="mt-2">
-                <img
+                <Image
                   src={message.imageUrl}
-                  alt="Generated or analyzed image"
+                  alt="Generated or analyzed image" // Add alt text
+                  width={500} // Set appropriate width
+                  height={300} // Set appropriate height
                   className="max-w-full h-auto rounded-lg"
                   onError={(e) => {
                     console.error("Error loading image:", e);
