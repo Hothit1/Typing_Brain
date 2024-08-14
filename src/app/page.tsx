@@ -108,7 +108,12 @@ export default function Home() {
 
   return (
     <div className={`flex flex-col h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      <TopBar onModelChange={handleModelChange} onAddonChange={handleAddonChange} />
+      <TopBar 
+        model={model} // Pass model prop
+        addon={addon} // Pass addon prop
+        onModelChange={handleModelChange} 
+        onAddonChange={handleAddonChange} 
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           onChatSelect={handleChatSelect}
