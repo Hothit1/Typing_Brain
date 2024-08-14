@@ -21,14 +21,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return res.status(500).json({ error: 'Error parsing the file' });
         }
 
+        // Check if audio files are present
+        if (!files.audio || !Array.isArray(files.audio) || files.audio.length === 0) {
+            return res.status(400).json({ error: 'No audio file uploaded' });
+        }
+
         const audioFile = files.audio[0];
         const audioBuffer = fs.readFileSync(audioFile.filepath);
 
-        const transcription = await openai.audio.transcriptions.create({
-            model: "whisper-1",
-            file: audioBuffer,
-        });
+        try {
+            const transcription = await openai.audio.transcriptions.create({
+                model: "whisper-1",
+                file: audioBuffer,
+            });
 
-        res.status(200).json({ text: transcription.text });
+            res.status(200).json({ text: transcription.text });
+        } catch (error) {
+            console.error('Error during transcription:', error);
+            res.status(500).json({ error: 'Failed to transcribe audio.' });
+        }
     });
 }
