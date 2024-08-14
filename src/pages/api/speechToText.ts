@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable from 'formidable';
 import fs from 'fs';
 import OpenAI from 'openai';
+import FormData from 'form-data';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -30,9 +31,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const audioBuffer = fs.readFileSync(audioFile.filepath);
 
         try {
+            // Create a FormData instance
+            const formData = new FormData();
+            formData.append('file', audioBuffer, {
+                filename: audioFile.originalFilename || 'audio.mp3', // Use the original filename or a default
+                contentType: 'audio/mpeg', // Set the content type
+            });
+
             const transcription = await openai.audio.transcriptions.create({
                 model: "whisper-1",
-                file: audioBuffer,
+                file: formData, // Pass the FormData instance
             });
 
             res.status(200).json({ text: transcription.text });
