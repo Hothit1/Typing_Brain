@@ -5,13 +5,20 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Define the type for a message
+interface Message {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { messages } = req.body;
+    // Ensure messages is typed correctly
+    const { messages }: { messages: Message[] } = req.body;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
