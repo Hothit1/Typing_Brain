@@ -17,8 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // If audio is a file path, create a readable stream
       const audioStream = fs.createReadStream(audio); // Adjust this if audio is base64 or URL
 
-      // Transcribe the audio with Whisper
-      const response = await openai.transcriptions.create({
+      // Check if the OpenAI SDK has a method for audio transcription
+      const response = await openai.audio.transcribe({
         model: 'whisper-1', // Choose a Whisper model (check OpenAI docs for options)
         file: audioStream, // Pass the readable stream
         language: 'en',  // Set the language for transcription (optional)
