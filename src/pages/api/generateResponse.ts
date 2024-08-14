@@ -55,7 +55,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         throw new Error('GROQ_API_KEY is not set in the environment variables');
       }
 
-      const { messages, model, addon, detachImage } = JSON.parse(fields.data as string);
+      const { messages, model, addon, detachImage } = JSON.parse(fields.data as string) as {
+        messages: any[];
+        model: string;
+        addon: string;
+        detachImage: boolean;
+      };
       const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
 
       console.log('Received request:', { model, addon, messageCount: messages.length, hasImage: !!imageFile, detachImage });
@@ -93,6 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   });
 }
+
 
 async function handleDalle(messages: any[]) {
   console.log('Using DALL-E 3 addon');
