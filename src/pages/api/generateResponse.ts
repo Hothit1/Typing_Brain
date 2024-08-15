@@ -27,10 +27,8 @@ export const config = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   console.log('API route called');
-  console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? 'Set' : 'Not set');
-  console.log('ANTHROPIC_API_KEY:', process.env.ANTHROPIC_API_KEY ? 'Set' : 'Not set');
-  console.log('GROQ_API_KEY:', process.env.GROQ_API_KEY ? 'Set' : 'Not set');
-  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('Request method:', req.method);
+  console.log('Request headers:', req.headers);
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -41,8 +39,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   
   form.parse(req, async (err: Error, fields: Fields, files: Files) => {
     if (err) {
-      return res.status(500).json({ error: 'Error parsing form data' });
+      console.error('Error parsing form data:', err);
+      return res.status(500).json({ error: 'Error parsing form data', details: err.message });
     }
+
+    console.log('Parsed fields:', fields);
+    console.log('Parsed files:', files);
 
     try {
       if (!process.env.OPENAI_API_KEY) {
@@ -55,25 +57,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         throw new Error('GROQ_API_KEY is not set in the environment variables');
       }
 
-      // Ensure fields.data is defined and is a string
-      if (!fields.data || typeof fields.data !== 'string') {
+      if (!fields.data || (!Array.isArray(fields.data) && typeof fields.data !== 'string')) {
+        console.error('Invalid data format. Received:', fields.data);
         return res.status(400).json({ error: 'Invalid data format' });
       }
 
-      const { messages, model, addon, detachImage } = JSON.parse(fields.data) as {
-        messages: any[];
-        model: string;
-        addon: string;
-        detachImage: boolean;
-      };
+      let parsedData;
+      try {
+        const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
+        parsedData = JSON.parse(dataString);
+      } catch (error) {
+        console.error('Error parsing JSON data:', error);
+        return res.status(400).json({ error: 'Invalid JSON in data field' });
+      }
+
+      const { messages, model, addon, detachImage } = parsedData;
+
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ error: 'Invalid or empty messages array' });
+      }
+      if (typeof model !== 'string' || model.trim() === '') {
+        return res.status(400).json({ error: 'Invalid or missing model' });
+      }
+      if (addon && typeof addon !== 'string') {
+        return res.status(400).json({ error: 'Invalid addon' });
+      }
+      if (typeof detachImage !== 'boolean') {
+        return res.status(400).json({ error: 'Invalid detachImage value' });
+      }
 
       const imageFile = Array.isArray(files.image) ? files.image[0] : files.image;
 
       console.log('Received request:', { model, addon, messageCount: messages.length, hasImage: !!imageFile, detachImage });
-
-      if (!messages || !model) {
-        return res.status(400).json({ error: 'Missing required parameters' });
-      }
 
       let response;
       if (addon === 'dalle') {
@@ -105,8 +120,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   });
 }
 
-// ... (rest of the functions remain unchanged)
-
 async function handleDalle(messages: any[]) {
   console.log('Using DALL-E 3 addon');
   const imagePrompt = messages[messages.length - 1].content;
@@ -116,6 +129,7 @@ async function handleDalle(messages: any[]) {
     n: 1,
     size: "1024x1024",
   });
+  console.log('DALL-E response:', image); // Add this log
   return { 
     response: "Image generated successfully.", 
     imageUrl: image.data[0].url 

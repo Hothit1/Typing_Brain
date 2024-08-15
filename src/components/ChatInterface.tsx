@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, Download, Image as ImageIcon, Copy, Check, Code, Eye } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import Image from 'next/image'; // Import Image from next/image
+import Image from 'next/image';
 
 interface Message {
   id: number;
@@ -21,6 +21,15 @@ interface ChatInterfaceProps {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) => {
   const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
   const [previewStates, setPreviewStates] = useState<{ [key: string]: boolean }>({});
+  const [imageLoadingStates, setImageLoadingStates] = useState<{ [key: number]: boolean }>({});
+
+  useEffect(() => {
+    messages.forEach(message => {
+      if (message.imageUrl) {
+        console.log('Image URL:', message.imageUrl);
+      }
+    });
+  }, [messages]);
 
   const handleDownload = (url: string, type: 'image' | 'audio') => {
     const link = document.createElement('a');
@@ -51,7 +60,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) =
       return (
         <div className="border border-gray-300 rounded p-2 bg-white h-64 overflow-auto">
           <iframe
-            srcDoc={code} // Ensure the HTML code is passed correctly
+            srcDoc={code}
             title="HTML Preview"
             className="w-full h-full border-none"
             sandbox="allow-scripts"
@@ -96,7 +105,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) =
               </button>
             </div>
             {isPreview ? (
-              renderCodePreview(code, language) // Ensure language is passed correctly
+              renderCodePreview(code, language)
             ) : (
               <SyntaxHighlighter
                 language={language || 'javascript'}
@@ -136,15 +145,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ messages, isAiTyping }) =
             {renderContent(message.content, message.id)}
             {message.imageUrl && message.role === 'assistant' && (
               <div className="mt-2">
+                {imageLoadingStates[message.id] && <p>Loading image...</p>}
                 <Image
                   src={message.imageUrl}
-                  alt="Generated or analyzed image" // Add alt text
-                  width={500} // Set appropriate width
-                  height={300} // Set appropriate height
+                  alt="Generated or analyzed image"
+                  width={500}
+                  height={300}
                   className="max-w-full h-auto rounded-lg"
+                  onLoadingComplete={() => setImageLoadingStates(prev => ({ ...prev, [message.id]: false }))}
                   onError={(e) => {
                     console.error("Error loading image:", e);
-                    (e.target as HTMLImageElement).style.display = 'none';
+                    console.error("Failed image URL:", message.imageUrl);
+                    setImageLoadingStates(prev => ({ ...prev, [message.id]: false }));
+                    const imgElement = e.target as HTMLImageElement;
+                    imgElement.style.display = 'none';
+                    imgElement.insertAdjacentHTML('afterend', '<p>Failed to load image</p>');
                   }}
                 />
                 <button
