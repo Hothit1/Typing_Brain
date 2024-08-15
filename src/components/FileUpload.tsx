@@ -22,7 +22,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
         aria-label="Upload Image" // Add aria-label for accessibility
       >
-        <Image size={20} />
+        <Image src={uploadIcon} alt="Upload file" width={24} height={24} /> {/* Updated line */}
       </button>
       <input
         type="file"
