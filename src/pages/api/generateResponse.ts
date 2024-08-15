@@ -36,7 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const form = new IncomingForm();
+  // Parse request body using formidable
+  const form = new IncomingForm({ multiples: true });
 
   form.parse(req, async (err: Error, fields: Fields, files: Files) => {
     if (err) {
