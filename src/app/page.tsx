@@ -9,6 +9,12 @@ interface ChatTitle {
   [key: string]: string;
 }
 
+interface Message {
+  id: number;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [model, setModel] = useState('gpt-4o-mini');
@@ -56,7 +62,7 @@ export default function Home() {
     setCurrentChatId(newChatId);
     setCurrentGPT(gptId || null);
     
-    let initialMessages = [];
+    let initialMessages: Message[] = []; // Explicitly define the type
     if (gptId) {
       const gpts = JSON.parse(localStorage.getItem('gpts') || '[]');
       const selectedGPT = gpts.find((gpt: any) => gpt.id === gptId);
@@ -102,7 +108,12 @@ export default function Home() {
 
   return (
     <div className={`flex flex-col h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      <TopBar onModelChange={handleModelChange} onAddonChange={handleAddonChange} />
+      <TopBar 
+        model={model} // Pass model prop
+        addon={addon} // Pass addon prop
+        onModelChange={handleModelChange} 
+        onAddonChange={handleAddonChange} 
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           onChatSelect={handleChatSelect}

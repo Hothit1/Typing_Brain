@@ -1,22 +1,31 @@
 import React from 'react';
 
 interface ChatHistoryItemProps {
-  chat: { id: string; title: string };
+  chat: {
+    id: string;
+    title: string;
+  };
   onSelect: () => void;
-  onExport: () => void;
   onDelete: () => void;
+  onExport: () => void; // Add onExport prop
 }
 
-export default function ChatHistoryItem({ chat, onSelect, onExport, onDelete }: ChatHistoryItemProps) {
+const ChatHistoryItem: React.FC<ChatHistoryItemProps> = ({ chat, onSelect, onDelete, onExport }) => {
   return (
-    <div className="flex justify-between items-center p-2 hover:bg-gray-100 cursor-pointer">
-      <span onClick={onSelect} className="flex-grow">{chat.title}</span>
-      <button onClick={(e) => { e.stopPropagation(); onExport(); }} className="text-sm text-blue-500 hover:text-blue-700 mr-2">
-        Export
-      </button>
-      <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="text-sm text-red-500 hover:text-red-700">
-        Delete
-      </button>
+    <div className="flex justify-between items-center p-2 hover:bg-gray-100">
+      <div className="flex-1 cursor-pointer" onClick={onSelect}>
+        {chat.title}
+      </div>
+      <div className="flex space-x-2">
+        <button onClick={onExport} className="text-blue-500 hover:text-blue-700">
+          Export
+        </button>
+        <button onClick={onDelete} className="text-red-500 hover:text-red-700">
+          Delete
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default ChatHistoryItem;

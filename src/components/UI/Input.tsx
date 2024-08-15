@@ -26,4 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
+// Add display name for better debugging
+Input.displayName = 'Input';
+
 export default Input;

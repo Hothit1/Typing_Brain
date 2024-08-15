@@ -84,6 +84,11 @@ export default function Sidebar({ onChatSelect, onNewChat, onGPTSelect, onChatUp
     handleNewChat(gptId);
   };
 
+  const handleExportChat = (chatId: string) => {
+    // Implement your export logic here
+    console.log(`Exporting chat with ID: ${chatId}`);
+  };
+
   return (
     <div className={`bg-white border-r h-full flex flex-col transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'}`}>
       <div className="flex justify-between items-center p-4">
@@ -145,6 +150,7 @@ export default function Sidebar({ onChatSelect, onNewChat, onGPTSelect, onChatUp
                   chat={chat} 
                   onSelect={() => onChatSelect(chat.id)}
                   onDelete={() => handleDeleteChat(chat.id)}
+                  onExport={() => handleExportChat(chat.id)} // Pass the onExport prop
                 />
               ))}
             </div>

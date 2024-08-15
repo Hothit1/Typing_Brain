@@ -68,78 +68,94 @@ export default function MainChat({ model, addon, chatId, onChatUpdate, currentGP
   }, [currentGPT, chatId, messages.length]);
 
   const handleSend = async () => {
-    if ((inputText.trim() || selectedImage) && !isLoading && chatId) {
-      setIsLoading(true);
-      setIsAiTyping(true);
-      const newMessage: Message = {
-        id: Date.now(),
-        text: inputText,
-        isUser: true,
-        role: 'user',
-        content: inputText,
+    if ((!inputText.trim() && !selectedImage) || isLoading || !chatId) {
+      return;
+    }
+  
+    setIsLoading(true);
+    setIsAiTyping(true);
+    const newMessage: Message = {
+      id: Date.now(),
+      text: inputText,
+      isUser: true,
+      role: 'user',
+      content: inputText,
+    };
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
+    setInputText('');
+    setError(null);
+  
+    localStorage.setItem(`chat_${chatId}`, JSON.stringify(updatedMessages));
+  
+    try {
+      const formData = new FormData();
+      const payload = {
+        messages: updatedMessages.map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+        model,
+        addon,
+        detachImage: false,
       };
-      const updatedMessages = [...messages, newMessage];
-      setMessages(updatedMessages);
-      setInputText('');
-      setError(null);
+      formData.append('data', JSON.stringify(payload));
+      
+      if (selectedImage) {
+        formData.append('image', selectedImage, selectedImage.name);
+      }
   
-      localStorage.setItem(`chat_${chatId}`, JSON.stringify(updatedMessages));
+      console.log('Sending request with payload:', JSON.stringify(payload, null, 2));
+      // Replace this line:
+      // console.log('FormData contents:', [...formData.entries()]);
+      // With this:
+      console.log('FormData keys:', Array.from(formData.keys()));
   
-      try {
-        const formData = new FormData();
-        formData.append('data', JSON.stringify({
-          messages: updatedMessages.map(msg => ({
-            role: msg.role,
-            content: msg.content,
-          })),
-          model,
-          addon, // Use the addon prop directly
-        }));
-        if (selectedImage) {
-          formData.append('image', selectedImage);
-        }
+      const response = await fetch('/api/generateResponse', {
+        method: 'POST',
+        body: formData,
+      });
   
-        const response = await fetch('/api/generateResponse', {
-          method: 'POST',
-          body: formData,
-        });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to generate response: ${response.status} ${response.statusText}. ${JSON.stringify(errorData)}`);
+      }
   
-        if (!response.ok) {
-          throw new Error(`Failed to generate response: ${response.status} ${response.statusText}`);
-        }
+      const data = await response.json();
   
-        const data = await response.json();
+      if (!data || (!data.response && !data.imageUrl && !data.audioUrl)) {
+        throw new Error('Received empty response from server');
+      }
   
-        let assistantMessage: Message = {
-          id: Date.now() + 1,
-          role: 'assistant',
-          content: data.response,
-          text: data.response,
-          isUser: false,
-        };
+      let assistantMessage: Message = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: data.response,
+        text: data.response,
+        isUser: false,
+      };
   
-        if (data.imageUrl) {
-          assistantMessage.imageUrl = data.imageUrl;
-        }
-        if (data.audioUrl) {
-          assistantMessage.audioUrl = data.audioUrl;
-        }
+      if (data.imageUrl) {
+        assistantMessage.imageUrl = data.imageUrl;
+      }
+      if (data.audioUrl) {
+        assistantMessage.audioUrl = data.audioUrl;
+      }
   
-        const finalMessages = [...updatedMessages, assistantMessage];
-        setMessages(finalMessages);
-        localStorage.setItem(`chat_${chatId}`, JSON.stringify(finalMessages));
+      const finalMessages = [...updatedMessages, assistantMessage];
+      setMessages(finalMessages);
+      localStorage.setItem(`chat_${chatId}`, JSON.stringify(finalMessages));
   
-        // Clear the selected image after sending
-        setSelectedImage(null);
-      } catch (error: any) {
-        console.error('Error generating response:', error);
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-        setIsAiTyping(false);
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+      setSelectedImage(null);
+    } catch (error: any) {
+      console.error('Error generating response:', error);
+      console.error('Error details:', error.response?.data);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+      setIsAiTyping(false);
+      if (inputRef.current) {
+        inputRef.current.focus();
       }
     }
   };
