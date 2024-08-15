@@ -70,9 +70,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
 
       try {
+        console.log('Attempting to parse JSON data:', dataString); // Add this line
         parsedData = JSON.parse(dataString);
       } catch (error: any) {
         console.error('Error parsing JSON data:', error);
+        console.error('Invalid JSON data:', dataString); // Add this line
         return res.status(400).json({ error: 'Invalid JSON in data field', details: error.message });
       }
 
@@ -98,24 +100,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       let response;
       // Handle different models and addons
-      if (addon === 'dalle') {
-        response = await handleDalle(messages);
-      } else if (addon === 'tts') {
-        response = await handleTTS(messages);
-      } else if (model === 'gpt-4o-mini') {
-        response = await handleGPT4(messages, imageFile, detachImage);
-      } else if (model === 'claude-3-opus-20240229') {
-        response = await handleClaudeVision(messages, imageFile);
-      } else if (model === 'claude-3-sonnet') {
-        response = await handleClaudeSonnet(messages);
-      } else if (model === 'llama-3.1-70b-versatile') {
-        response = await handleGroq(messages);
-      } else {
-        throw new Error('Invalid model or addon selected');
-      }
-
-      console.log('Response generated successfully');
-      return res.status(200).json(response);
+      // ... existing code ...
     } catch (error: any) {
       console.error('Detailed error:', error);
       return res.status(500).json({
