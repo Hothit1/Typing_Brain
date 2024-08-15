@@ -71,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       try {
         parsedData = JSON.parse(dataString);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error parsing JSON data:', error);
         return res.status(400).json({ error: 'Invalid JSON in data field', details: error.message });
       }
@@ -126,7 +126,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   });
 }
-
 async function handleDalle(messages: any[]) {
   console.log('Using DALL-E 3 addon');
   const imagePrompt = messages[messages.length - 1].content;
