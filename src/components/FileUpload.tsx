@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Image } from 'lucide-react';
+import { Image as UploadIcon } from 'lucide-react'; // Renamed for clarity
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -22,7 +22,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect }) => {
         className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
         aria-label="Upload Image" // Add aria-label for accessibility
       >
-        <Image src={uploadIcon} alt="Upload file" width={24} height={24} /> {/* Updated line */}
+        <UploadIcon size={24} /> {/* Updated line: using icon without src, width, height */}
       </button>
       <input
         type="file"
