@@ -67,12 +67,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       let parsedData;
+      const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
+
       try {
-        const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
         parsedData = JSON.parse(dataString);
       } catch (error) {
         console.error('Error parsing JSON data:', error);
-        return res.status(400).json({ error: 'Invalid JSON in data field' });
+        return res.status(400).json({ error: 'Invalid JSON in data field', details: error.message });
       }
 
       const { messages, model, addon, detachImage } = parsedData;
@@ -87,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (addon && typeof addon !== 'string') {
         return res.status(400).json({ error: 'Invalid addon' });
       }
-      if (typeof detachImage !== 'boolean') {
+      if (typeof detachImage !== 'boolean' && detachImage !== undefined) {
         return res.status(400).json({ error: 'Invalid detachImage value' });
       }
 
@@ -117,8 +118,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(response);
     } catch (error: any) {
       console.error('Detailed error:', error);
-      return res.status(500).json({ 
-        error: 'Failed to generate response', 
+      return res.status(500).json({
+        error: 'Failed to generate response',
         details: error.message,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
