@@ -9,11 +9,17 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ placeholder, value, onChange, onKeyPress, disabled, ...rest }, ref) => {
+  ({ placeholder, value, onChange, onKeyPress, disabled, className, ...rest }, ref) => {
     return (
       <input
         type="text"
-        className="border rounded px-3 py-2 w-full"
+        className={`w-full px-3 py-2 border rounded 
+          text-black bg-white 
+          dark:text-white dark:bg-gray-800 
+          placeholder-gray-500 dark:placeholder-gray-400
+          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          ${className || ''}`}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
@@ -26,7 +32,5 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-// Add display name for better debugging
 Input.displayName = 'Input';
-
 export default Input;
