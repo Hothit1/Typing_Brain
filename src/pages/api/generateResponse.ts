@@ -210,7 +210,7 @@ async function handleGPT4(messages: any[], imageFile: File | undefined, detachIm
   const completion = await openai.chat.completions.create({
     model: model,
     messages: visionMessages,
-    max_tokens: 500,
+    max_tokens: 2000,
   });
   return { response: completion.choices[0].message.content };
 }
