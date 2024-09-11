@@ -29,14 +29,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   console.log('API route called');
   console.log('Request method:', req.method);
   console.log('Request headers:', req.headers);
+  console.log('Request body:', req.body);
 
+  // Check if the request method is POST
   if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    console.error('Method not allowed:', req.method);
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const form = new IncomingForm();
-  
+  // Parse request body using formidable
+  const form = new IncomingForm({ multiples: true });
+
   form.parse(req, async (err: Error, fields: Fields, files: Files) => {
     if (err) {
       console.error('Error parsing form data:', err);
@@ -47,6 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log('Parsed files:', files);
 
     try {
+      // Check for required environment variables
       if (!process.env.OPENAI_API_KEY) {
         throw new Error('OPENAI_API_KEY is not set in the environment variables');
       }
@@ -57,22 +61,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         throw new Error('GROQ_API_KEY is not set in the environment variables');
       }
 
+      // Validate input data
       if (!fields.data || (!Array.isArray(fields.data) && typeof fields.data !== 'string')) {
         console.error('Invalid data format. Received:', fields.data);
         return res.status(400).json({ error: 'Invalid data format' });
       }
 
       let parsedData;
+      const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
+
       try {
-        const dataString = Array.isArray(fields.data) ? fields.data[0] : fields.data;
+        console.log('Attempting to parse JSON data:', dataString);
         parsedData = JSON.parse(dataString);
-      } catch (error) {
+        console.log('Parsed JSON data:', parsedData);
+      } catch (error: any) {
         console.error('Error parsing JSON data:', error);
-        return res.status(400).json({ error: 'Invalid JSON in data field' });
+        console.error('Invalid JSON data:', dataString);
+        return res.status(400).json({ error: 'Invalid JSON in data field', details: error.message });
       }
 
       const { messages, model, addon, detachImage } = parsedData;
 
+      // Validate messages and model
       if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ error: 'Invalid or empty messages array' });
       }
@@ -82,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (addon && typeof addon !== 'string') {
         return res.status(400).json({ error: 'Invalid addon' });
       }
-      if (typeof detachImage !== 'boolean') {
+      if (typeof detachImage !== 'boolean' && detachImage !== undefined) {
         return res.status(400).json({ error: 'Invalid detachImage value' });
       }
 
@@ -91,6 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.log('Received request:', { model, addon, messageCount: messages.length, hasImage: !!imageFile, detachImage });
 
       let response;
+      // Handle different models and addons
       if (addon === 'dalle') {
         response = await handleDalle(messages);
       } else if (addon === 'tts') {
@@ -111,14 +122,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(200).json(response);
     } catch (error: any) {
       console.error('Detailed error:', error);
-      return res.status(500).json({ 
-        error: 'Failed to generate response', 
+      return res.status(500).json({
+        error: 'Failed to generate response',
         details: error.message,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
   });
 }
+
+
 
 async function handleDalle(messages: any[]) {
   console.log('Using DALL-E 3 addon');
@@ -197,7 +210,7 @@ async function handleGPT4(messages: any[], imageFile: File | undefined, detachIm
   const completion = await openai.chat.completions.create({
     model: model,
     messages: visionMessages,
-    max_tokens: 500,
+    max_tokens: 2000,
   });
   return { response: completion.choices[0].message.content };
 }
